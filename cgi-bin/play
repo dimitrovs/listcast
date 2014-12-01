@@ -1,0 +1,20 @@
+#!/bin/bash
+
+rawurldecode() {
+
+  # This is perhaps a risky gambit, but since all escape characters must be
+  # encoded, we can replace %NN with \xNN and pass the lot to printf -b, which
+  # will decode hex for us
+
+  printf -v REPLY '%b' "${1//%/\\x}" # You can either set a return variable (FASTER)
+
+  echo "${REPLY}"  #+or echo the result (EASIER)... or both... :p
+}
+
+echo -e "Content-type: video/x-matroska\n"
+
+arr=(${QUERY_STRING//=/ })
+ffmpeg -i "$(rawurldecode ${arr[1]})" -c:a libvo_aacenc -b:a 128k -vcodec copy -f matroska - 2>/dev/null &
+pid=$!
+trap "kill $pid" SIGTERM SIGPIPE
+wait
