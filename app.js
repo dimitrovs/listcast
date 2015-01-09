@@ -6,23 +6,23 @@ app.config(function ($routeProvider) {
         .when('/channels',
             {
                 controller: 'ChannelsController',
-                templateUrl: '/app/partials/channels.html'
+                templateUrl: '/partials/channels.html'
             })
         //Define a route that has a route parameter in it (:customerID)
         .when('/player/:channelID',
             {
                 controller: 'PlayerController',
-                templateUrl: '/app/partials/player.html'
+                templateUrl: '/partials/player.html'
             })
         .when('/editChannel/:channelID',
             {
                 controller: 'ChannelSettingsController',
-                templateUrl: '/app/partials/channelSettings.html'
+                templateUrl: '/partials/channelSettings.html'
             })
         .when('/settings',
             {
                 controller: 'SettingsController',
-                templateUrl: '/app/partials/settings.html'
+                templateUrl: '/partials/settings.html'
             })
         .otherwise({ redirectTo: '/channels' });
 });
