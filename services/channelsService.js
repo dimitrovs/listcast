@@ -4,6 +4,7 @@ app.service('channelsService', function($q, $http, localStorageService, settings
     var videoTranscodeCodec = 'libx264';
     var audioTranscodeCodec = 'libvo_aacenc';
     var channels = localStorageService.get("channels");
+    var channelsToProbe = []
     if (channels == null) {
         channels = [];
     }
@@ -51,7 +52,10 @@ app.service('channelsService', function($q, $http, localStorageService, settings
         };
         channels.push(channel);
         localStorageService.set("channels", channels);
-        this.probeChannel(channel);
+        channelsToProbe.push(channel)
+        if (channelsToProbe.length === 1) {
+            this.probeChannels();
+        }
     };
 
     this.deleteChannel = function(id) {
@@ -91,6 +95,16 @@ app.service('channelsService', function($q, $http, localStorageService, settings
             }
         }
         localStorageService.set("channels", channels);
+    }
+    
+    this.probeChannels = function() {
+        channel = channelsToProbe.pop();
+        var checkForMoreChannels = function() {
+            if (channelsToProbe.length !== 0) {
+                this.probeChannels();
+            }
+        };
+        this.probeChannel(channel).finally(checkForMoreChannels);
     }
 
     this.probeChannel = function(channel) {
