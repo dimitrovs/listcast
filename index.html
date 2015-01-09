@@ -1,69 +1,120 @@
-<html><head>
-<title>Google Cast Chrome Sender SDK: Hello Videos</title>
-<link rel="stylesheet" type="text/css" href="css/demo.css">
-<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
-<script src="listcast.js"></script><script src="chrome-extension://boadgeojelhgndaghljhdicfkmllpafd/cast_sender.js"></script>
+<html>
+
+<head>
+  <title>listCast Playlist Manager</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="xdRequest.js"></script> 
 </head>
+
 <body>
-  <div>
-    <div>
-      <h2 style="display:block">Google Cast Chrome Sender SDK: Hello Videos</h2>
-<video src="/cgi-bin/beinsports1" controls="" preload="none" width="320" height="240">
-</video>
-      <div style="float:left; width:100%; margin:10px;">
-        <h3 style="display: inline-block">Choose a media below or enter your own media URL to cast</h3><br>
-        <span style="font-weight:bold; color:#0000cc;">Enter custom media URL</span>: <input type="text" name="customMediaURL" value="" size="70" id="customMediaURL"><br>
-        <input type="submit" name="loadCustomMeida" value="Load Custom Media" onclick="loadCustomMedia();">
-      </div>
-      <br>
-      <div style="width:80%; margin:10px;">
-        <div style="margin:0px; float:left; width: 40%;">
-           <input type="radio" checked="" name="media" onclick="selectMedia(0);">Big Buck Bunny MP4<br>
-           <input type="radio" name="media" onclick="selectMedia(1);">Elephants Dream MP4<br>
-           <input type="radio" name="media" onclick="selectMedia(2);">Tears of Steel MOV<br>
-           <input type="radio" name="media" onclick="selectMedia(3);">Reel MP4<br>
-           <input type="radio" name="media" onclick="selectMedia(4);">Google I/O 2011 MP3<br>
-        </div>
-        <div style="margin:0px; float:left; width:250px;">
-           <img src="images/bunny.jpg" width="250" id="thumb">
-           <img src="images/cast_icon_idle.png" id="casticon" width="30">
-        </div>
-      </div>
 
-      <div style=" margin:0px; float:left; display:block; width:90%;">
-        <div style=" margin:10px; float:left; display:block; width:40%;">
-          <button onclick="launchApp()">Launch app</button>
-          <button onclick="stopApp()">Stop app</button>
-          <button id="joinsessionbyid" style="float:right; display:none;" onclick="joinSessionBySessionId()">Join by session ID</button>
-          <br>
-          <button onclick="loadMedia()">Load media</button>
-          <button id="playpauseresume" onclick="playMedia()">Play</button>
-          <button onclick="stopMedia()">Stop media</button>
-          <button id="muteunmute" onclick="muteMedia();">Mute media</button>
-          <button id="getstatus" onclick="getMediaStatus();">Get media status</button>
-        </div>
+  <input type="file" id="files" name="files[]" />
+  <output id="list"></output>
+  <div id="branding" style="float: left;"></div>
+  <br />
+  <div id="content">Loading...</div>
+  <script type="text/javascript">
+    google.load('search', '1');
 
-        <div style="margin-top:60px; float:left; width:15%;">
-	   <input class="vertical" type="range" min="0" max="100" step="1" onmouseup="setReceiverVolume(1-this.value/100,false);">
-           <div class="vertical">Volume control</div>
-        </div>
-      </div>
-    </div>
-    <div style=" margin:10px; float:left; display:block; width:100%;">
-      <div style="margin:10px;">
-        Progress : <input id="progress" type="range" min="1" max="100" value="1" step="1" onmouseup="seekMedia(this.value);">
-        <span id="duration"></span>
-        <div id="progress_tick"></div>
-      </div>
-      <div style="margin:10px;">
-        State : <span id="playerstate">IDLE</span>
-      </div>
+    var imageSearch;
+    function searchComplete(counter_value) {
 
-      <div style="margin:10px;">
-        <textarea rows="20" cols="70" id="debugmessage">        
-"init success"
-"receiver found"</textarea>
-      </div>
+      // Check that we got results
+      if (imageSearch.results && imageSearch.results.length > 0) {
 
-    </div>
-  </div>
+        // Grab our content div, clear it.
+        var contentDiv = document.getElementById('content');
+
+        // Loop through our results, printing them to the page.
+        var results = imageSearch.results;
+        for (var i = 0; i < results.length; i++) {
+          // For each result write it's title and image to the screen
+                var result = results[i];
+
+          // There is also a result.url property which has the escaped version
+          var myXDR = new xdRequest;
+ myXDR.setURL(result.tbUrl).get(
+        function(response) {
+          var img_base64 = window.btoa(response.html);
+          localStorage.setItem("thumb_"+counter_value, img_base64);
+          var imgContainer = document.createElement('div');
+
+          // We use titleNoFormatting so that no HTML tags are left in the 
+          // title
+          var newImg = document.createElement('img');
+         newImg.src = 'data:;base64,'+img_base64;
+          imgContainer.appendChild(newImg);
+
+          // Put our title + image in the content
+          contentDiv.appendChild(imgContainer);
+        }
+ );
+          
+          if (counter_value < 10) {
+            imageSearch = new google.search.ImageSearch();
+            imageSearch.setSearchCompleteCallback(this, searchComplete, [counter_value+1]);
+            imageSearch.setResultSetSize(1);
+            imageSearch.execute(localStorage.getItem("name_"+(counter_value+1))+ " logo");
+          }
+        }
+      }
+    }
+
+    function OnLoad() {
+
+      // Create an Image Search instance.
+      //imageSearch = new google.search.ImageSearch();
+
+      // Set searchComplete as the callback function when a search is 
+      // complete.  The imageSearch object will have results in it.
+      //imageSearch.setSearchCompleteCallback(this, searchComplete, null);
+      //imageSearch.setResultSetSize(1);
+      document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+      // Include the required Google branding
+      google.search.Search.getBranding('branding');
+    }
+    google.setOnLoadCallback(OnLoad);
+
+    function handleFileSelect(evt) {
+      localStorage.clear();
+      var files = evt.target.files; // FileList object
+
+      // files is a FileList of File objects. List some properties.
+      var output = [];
+      for (var i = 0, f; f = files[i]; i++) {
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = (function(theFile) {
+          return function(e) {
+            var span = document.createElement('span');
+            var myRe = /#EXTINF:.*,(.*)\n(.*)\n*/g;
+            var counter = 0
+            while ((myArray = myRe.exec(e.target.result)) !== null) {
+              localStorage.setItem("name_"+counter,myArray[1]);
+              localStorage.setItem("url_"+counter,myArray[2]);
+              //console.log(myArray[1]);
+              //console.log(myArray[2]);
+              if (counter > 10) {
+                localStorage.setItem("num_channels", counter);
+                imageSearch = new google.search.ImageSearch();
+                imageSearch.setSearchCompleteCallback(this, searchComplete, [1]);
+                imageSearch.setResultSetSize(1);
+                imageSearch.execute(localStorage.getItem("name_"+1) + " logo");
+                break;
+              }
+              counter += 1;
+            }
+            //span.innerHTML = e.target.result;
+            //document.getElementById('list').insertBefore(span, null);
+          };
+        })(f);
+
+        // Read in the image file as a data URL.
+        reader.readAsText(f);
+      }
+    }
+  </script>

@@ -1,0 +1,26 @@
+<div class="settings view">
+    <div class="container">
+        <header>
+            <h3>Settings</h3>
+        </header>
+        <div>
+            <form name="settingsForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label for="channelName" class="col-md-2 control-label">Transcoder URL:</label>
+                <div class="col-md-10"><input id="channelName" class="form-control" data-ng-model="transcoderURL" type="url" placeholder="http://" required></div>
+            </div>
+            <div class="form-group">
+                <label for="analyzerURL" class="col-md-2 control-label">Analyzer URL:</label>
+                <div class="col-md-10"><input id="analyzerURL" class="form-control" data-ng-model="analyzerURL" type="url" placeholder="http://" required></div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                <button id="saveSettingsButton" class="btn btn-primary" type="button" 
+                    data-ng-disabled="!transcoderURL|!analyzerURL"
+                    data-ng-click="saveSettings()">Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

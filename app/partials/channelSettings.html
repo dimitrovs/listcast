@@ -1,0 +1,69 @@
+<div class="player view">
+    <div class="container">
+        <header>
+            <h3>Edit Channel {{ channel.name }}</h3>
+        </header>
+        <div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="indent">
+                        {{channel.thumbnail}}
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <form name="editChannelForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label for="channelName" class="col-md-2 control-label">Name:</label> 
+                <div class="col-md-10"><input class="form-control" id="channelName" data-ng-model="channel.name" type="text" placeholder="" required></div>
+            </div>
+            <div class="form-group">
+                <label for="channelUrl" class="col-md-2 control-label">URL:</label>
+                <div class="col-md-10"><input id="channelUrl" class="form-control" data-ng-model="channel.url" type="text" placeholder="http://" required></div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2 control-label">Video Track:</div>
+                <div class="col-md-4">
+                    <div class="radio" ng-repeat="stream in videoStreams">
+                        <label>
+                            <input type="radio" ng-model="channel.settings.track1" value="{{stream.index}}"> {{stream.index}} - {{stream.codec_name}}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6 checkbox">
+                    <label>
+                    <input data-ng-model="channel.settings.videoTranscode" type="checkbox"> Transcode to H264
+                 </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2 control-label">Audio Track:</div>
+                <div class="col-md-4">
+                    <div class="radio" ng-repeat="stream in audioStreams">
+                        <label>
+                            <input type="radio" ng-model="channel.settings.track2" value="{{stream.index}}"> {{stream.index}}  - {{stream.codec_name}} ({{stream.tags.language}})
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6 checkbox">
+                    <label>
+                    <input data-ng-model="channel.settings.audioTranscode" type="checkbox"> Transcode to AAC
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-5">
+                <button id="saveChannelSettingsButton" class="btn btn-primary btn-default" type="button" 
+                    data-ng-disabled="!channel.url" 
+                    data-ng-click="saveChannelSettings()">Save</button>
+                <button id="probeChannelButton" class="btn" type="button" 
+                    data-ng-disabled="!channel.url" 
+                    data-ng-click="probeChannel()">Refresh Tracks</button>
+                <button id="deleteChannelButton" class="btn btn-danger" type="button" 
+                    data-ng-click="deleteChannel()">Delete</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

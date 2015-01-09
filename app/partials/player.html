@@ -1,0 +1,18 @@
+<div class="player view">
+    <div class="container">
+        <header>
+            <h3>Player for {{ channel.name }}</h3>
+        </header>
+        <div>
+            <div class="row">
+                <div class="span12">
+                    <div class="indent">
+                        {{channel.thumbnail}}
+                        <br />
+                        <video ng-src="{{channel_url}}" controls="" autoplay="autoplay" preload="none" width="640" height="480"></video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
